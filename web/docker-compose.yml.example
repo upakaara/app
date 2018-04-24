@@ -7,11 +7,15 @@ services:
       dockerfile: app.dockerfile
     working_dir: /var/www
     volumes:
-      - ./:/var/www
+      - "$PWD:/var/www"
     restart: always
     environment:
-      - "DB_PORT=3306"
+      - "DB_PORT=5431"
       - "DB_HOST=database"
+    depends_on:
+      - database
+    links:
+      - database
 
   # The Web Server
   web:
@@ -26,17 +30,17 @@ services:
       - 60080:80
   # The Database
   database:
-    image: mysql:5.6
+    image: postgres:9.5
     volumes:
-      - dbdata:/var/lib/mysql
+      - "$PWD/docker/.data/db:/var/lib/postgresql/data"
     restart: always
-    environment:
-      - "MYSQL_DATABASE=webdb"
-      - "MYSQL_USER=webdbuser"
-      - "MYSQL_PASSWORD=Abc123"
-      - "MYSQL_ROOT_PASSWORD=Uw*tm8?"
     ports:
-        - "33063:3306"
+      - 5431:5432
+    environment:
+      - "POSTGRES_DB: db"
+      - "POSTGRES_USER: dbuser"
+      - "POSTGRES_PASSWORD: upakaara"
+    container_name: upakaara_web_db
   redis:
     image: redis
     restart: always  
@@ -45,11 +49,9 @@ services:
   chrome:
     image: robcherry/docker-chromedriver
     environment:
-       CHROMEDRIVER_WHITELISTED_IPS: ""
-       CHROMEDRIVER_PORT: "9515"
+      CHROMEDRIVER_WHITELISTED_IPS: ""
+      CHROMEDRIVER_PORT: "9515"
     ports:
-       - 9515:9515
+      - 9515:9515
     cap_add:
-       - "SYS_ADMIN"
-volumes:
-  dbdata:
+      - "SYS_ADMIN"
