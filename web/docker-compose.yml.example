@@ -9,14 +9,10 @@ services:
     volumes:
       - "$PWD:/var/www"
     restart: always
-    environment:
-      - "DB_PORT=5431"
-      - "DB_HOST=database"
     depends_on:
       - database
     links:
       - database
-
   # The Web Server
   web:
     build:
@@ -34,13 +30,10 @@ services:
     volumes:
       - "$PWD/docker/.data/db:/var/lib/postgresql/data"
     restart: always
-    ports:
-      - 5431:5432
     environment:
-      - "POSTGRES_DB: db"
-      - "POSTGRES_USER: dbuser"
-      - "POSTGRES_PASSWORD: upakaara"
-    container_name: upakaara_web_db
+      POSTGRES_DB: db
+      POSTGRES_USER: dbuser
+      POSTGRES_PASSWORD: upakaara
   redis:
     image: redis
     restart: always  
