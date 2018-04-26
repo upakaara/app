@@ -75,6 +75,22 @@
                             </div>
                         </div>
 
+                        <div class="form-group{{ $errors->has('terms') ? ' has-error' : '' }}">
+                            <div class="col-md-6 col-md-offset-4">
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" name="terms" {{ old('terms') ? 'checked' : '' }}>I agree with terms and conditions.
+                                    </label>
+                                    
+                                    @if ($errors->has('terms'))
+                                        <span class="help-block">
+                                            <strong>{{ $errors->first('terms') }}</strong>
+                                        </span>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                        
                         <div class="form-group">
                             <div class="col-md-6 col-md-offset-4">
                                 <button type="submit" class="btn btn-primary">
