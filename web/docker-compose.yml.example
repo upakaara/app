@@ -1,42 +1,26 @@
 version: '2'
 services:
   # The Application
-  app:
-    build:
-      context: ./docker
-      dockerfile: app.dockerfile
-    working_dir: /var/www
-    volumes:
-      - "$PWD:/var/www"
-    restart: always
+  app: 
+    extends:
+      file: ./docker/base/docker-compose.yml 
+      service: app
+    ports: 
+      - 60085:80
     depends_on:
       - database
     links:
       - database
-  # The Web Server
-  web:
-    build:
-      context: ./docker
-      dockerfile: web.dockerfile
-    working_dir: /var/www
-    volumes_from:
-      - app
-    restart: always
-    ports:
-      - 60080:80
+    volumes: 
+      - "$PWD:/var/www"
   # The Database
   database:
-    image: postgres:9.5
-    volumes:
-      - "$PWD/docker/.data/db:/var/lib/postgresql/data"
-    restart: always
-    environment:
-      POSTGRES_DB: db
-      POSTGRES_USER: dbuser
-      POSTGRES_PASSWORD: upakaara
+    extends:
+      file: ./docker/base/docker-compose.yml
+      service: database
   redis:
     image: redis
-    restart: always  
+    restart: always
     ports:
       - 6378:6378
   chrome:
