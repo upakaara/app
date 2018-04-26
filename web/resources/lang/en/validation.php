@@ -100,9 +100,9 @@ return [
     */
 
     'custom' => [
-        'attribute-name' => [
-            'rule-name' => 'custom-message',
-        ],
+        'terms' => array(
+            'required' => 'You must need to agree with our terms and conditions.',
+        ),
     ],
 
     /*
