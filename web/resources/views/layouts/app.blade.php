@@ -13,13 +13,12 @@
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
     <link href="{{ asset('/packages/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     @stack('styles')
 
     <script type="text/javascript" src="{{ asset('/js/jquery.min.js') }}"></script>
     <script type="text/javascript" src="{{ asset('/js/popper.min.js') }}"></script>
     <script type="text/javascript" src="{{ asset('/packages/bootstrap/js/bootstrap.min.js') }}"></script>
-
-
     @stack('scripts')
 
 </head>
