@@ -5,10 +5,11 @@
     <div class="row">
         <div class="col-md-8 col-md-offset-2">
             <div class="panel panel-default">
-                <div class="panel-heading">Profile</div>
+               
+                <div class="panel-heading">Profile Update</div>
 
                 <div class="panel-body">
-                    <form class="form-horizontal" method="POST" action="{{ route('user.update', ['id' => $user->id]) }}">
+                    <form class="form-horizontal" method="POST" action="{{ route('user.update') }}">
                         {{ csrf_field() }}
                         {{ method_field('PUT') }}
 
@@ -128,7 +129,7 @@
                             <label for="dob" class="col-md-4 control-label">DOB</label>
 
                             <div class="col-md-6">
-                                <input id="dob" type="text" class="form-control datepicker" data-provide="datepicker" name="dob" value="{{ $user->dob }}">
+                                <input id="dob" type="text" class="form-control" data-provide="datepicker" name="dob" value="{{ $user->dob }}">
 
                                 @if ($errors->has('dob'))
                                     <span class="help-block">
@@ -239,8 +240,8 @@
 
         $(document).ready(function() {
 
-            $('.dob').datepicker({  
-               format: 'mm-dd-yyyy'
+            $('#dob').datepicker({  
+               format: 'mm/dd/Y'
             });  
             
             $('#interests').selectpicker({

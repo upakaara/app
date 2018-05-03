@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use Auth;
 use App\User;
 use App\Skill;
 use App\Interest;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class UserController extends Controller
 {
@@ -38,10 +40,18 @@ class UserController extends Controller
      */
     protected function validator(array $data)
     {
+        $userId = Auth::user()->id;
+
         return Validator::make($data, [
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
+            'email' => 'required|string|max:255|unique:users|email',
+            'email' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('users')->ignore($userId),
+            ],
             'subtitle' => 'string',
             'address_line_1' => 'string',
             'address_line_2' => 'string',
@@ -50,8 +60,8 @@ class UserController extends Controller
             'dob' => 'date_format:mm/dd/Y',
             'interests' => 'array',
             'skills' => 'array',
-            'visibility' => 'boolean',
-            'notification' => 'boolean'
+            'visibility' => 'string',
+            'notification' => 'string'
         ]);
     }
 
@@ -60,9 +70,10 @@ class UserController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index($id)
+    public function index()
     {
-        $user = User::find($id);
+        $userId = Auth::user()->id;
+        $user = User::find($userId);
         $skills = Skill::all();
         $interests = Interest::all();
 
@@ -97,10 +108,19 @@ class UserController extends Controller
      * @param  array  $data
      * @return \App\User
      */
-    protected function update(Request $req, $userId)
+    protected function update(Request $req)
     {
+        $validator = $this->validator($req->all());
+
+        if ($validator->fails()) {
+            return redirect()
+                ->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        $userId = Auth::user()->id;
         $user = User::find($userId);
-        // dd($user);
 
         $user->first_name = $req->first_name;
         $user->last_name = $req->last_name;
@@ -130,6 +150,6 @@ class UserController extends Controller
             }
         }
 
-        return view('home');
+        return redirect()->back()->with('message', 'Successfully update user profile.');
     }
 }
