@@ -64,12 +64,14 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
+        $defaultProfileImage = '/images/noprofilepic.png';
 
         return User::create([
             'first_name' => $data['first_name'],
             'last_name' => $data['last_name'],
             'email' => $data['email'],
             'password' => bcrypt($data['password']),
+            'image_url' => $defaultProfileImage
         ]);
     }
 }

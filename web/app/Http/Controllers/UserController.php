@@ -43,21 +43,21 @@ class UserController extends Controller
         $userId = Auth::user()->id;
 
         return Validator::make($data, [
+            'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
-            'email' => 'required|string|max:255|unique:users|email',
             'email' => [
                 'required',
                 'string',
                 'max:255',
                 Rule::unique('users')->ignore($userId),
             ],
-            'subtitle' => 'string',
-            'address_line_1' => 'string',
-            'address_line_2' => 'string',
-            'address_city' => 'string',
-            'address_postcode' => 'string',
-            'dob' => 'date_format:mm/dd/Y',
+            'subtitle' => 'nullable|string',
+            'address_line_1' => 'nullable|string',
+            'address_line_2' => 'nullable|string',
+            'address_city' => 'nullable|string',
+            'address_postcode' => 'nullable|string',
+            'dob' => 'nullable|date',
             'interests' => 'array',
             'skills' => 'array',
             'visibility' => 'string',
@@ -110,6 +110,7 @@ class UserController extends Controller
      */
     protected function update(Request $req)
     {
+        // dd($req);
         $validator = $this->validator($req->all());
 
         if ($validator->fails()) {
@@ -133,6 +134,13 @@ class UserController extends Controller
         $user->dob = $req->dob;
         $user->visibility = $req->visibility === 'true';
         $user->notification = $req->notification === 'true';
+
+        if($req->image) {
+            $imageName = 'profile'.time().'.'. $req->image->getClientOriginalExtension();
+            $req->image->move(public_path('images'), $imageName);
+            $user->image_url = '/images/' . $imageName ;
+        }
+
         $user->save();
 
         $user->interests()->detach();
@@ -145,11 +153,11 @@ class UserController extends Controller
         }
 
         if($req->skills) {
-            foreach ($req->skills as $key => $skill) {
+            foreach($req->skills as $key => $skill) {
                 $user->skills()->attach($skill);
             }
         }
 
-        return redirect()->back()->with('message', 'Successfully update user profile.');
+        return redirect()->back()->with('success', 'Successfully update user profile.');
     }
 }

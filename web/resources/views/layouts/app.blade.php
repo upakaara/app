@@ -82,9 +82,13 @@
                 </div>
             </div>
         </nav>
-        @if(session()->has('message'))
-            <div class="alert alert-success">
-                {{ session()->get('message') }}
+        @if(session()->has('success'))
+
+            <div class="alert alert-success alert-block">
+
+                <button type="button" class="close" data-dismiss="alert">×</button>
+                <strong>{{ session()->get('success') }}</strong>
+
             </div>
         @endif
         @yield('content')

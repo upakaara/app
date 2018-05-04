@@ -9,9 +9,22 @@
                 <div class="panel-heading">Profile Update</div>
 
                 <div class="panel-body">
-                    <form class="form-horizontal" method="POST" action="{{ route('user.update') }}">
+
+                    <form class="form-horizontal" method="POST" action="{{ route('user.update') }}" enctype="multipart/form-data">
                         {{ csrf_field() }}
                         {{ method_field('PUT') }}
+
+                        <div class="form-group">
+                            <label for="image" class="col-md-4 control-label">Profile Image</label>
+                            
+                            <div class="col-md-6">
+                                <div>
+                                    <img src={{ $user->image_url }}  style="width:200px;height:200px; border-radius: 10px;">
+                                </div>
+                                <input type="file" name="image"/>
+                            </div>
+
+                        </div>
 
                         <div class="form-group{{ $errors->has('first_name') ? ' has-error' : '' }}">
                             <label for="first_name" class="col-md-4 control-label">First Name</label>
