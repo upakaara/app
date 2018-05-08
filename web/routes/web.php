@@ -15,10 +15,17 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Auth::routes();
+
 //Social Auth Routes
 Route::get('auth/{provider}', 'Auth\SocialAuthController@redirectToProvider');
 Route::get('auth/{provider}/callback', 'Auth\SocialAuthController@handleProviderCallback');
 
-Auth::routes();
+//Jobs Routes
+Route::get('jobs', 'JobsController@index');
+Route::get('/jobs/create', 'JobsController@create');
+Route::get('/jobs/{id}', 'JobsController@show');
+Route::post('jobs', 'JobsController@store');
+Route::delete('/jobs/{id}', 'JobsController@destroy');
 
 Route::get('/home', 'HomeController@index')->name('home');

@@ -77,5 +77,19 @@
 
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') }}"></script>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            setTimeout(function() {
+              $('#successMessageAlert').fadeOut('fast');
+            }, 3000);
+
+            $('#jobListTable tr').click(function() {
+                var href = $(this).find("a").attr("href");
+                if(href) {
+                    window.location = href;
+                }
+            });
+        });
+    </script>
 </body>
 </html>
