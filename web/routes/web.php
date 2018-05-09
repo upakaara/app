@@ -29,3 +29,7 @@ Route::post('jobs', 'JobsController@store');
 Route::delete('/jobs/{id}', 'JobsController@destroy');
 
 Route::get('/home', 'HomeController@index')->name('home');
+
+Route::get('user/profile', 'UserController@index')->name('profile');
+
+Route::put('user/profile/update', 'UserController@update')->name('user.update');

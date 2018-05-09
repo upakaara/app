@@ -11,3 +11,4 @@ Homestead.yaml
 docker/.data
 /docker-compose.yml
 !/.keep
+storage/debugbar/

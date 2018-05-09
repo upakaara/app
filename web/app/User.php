@@ -15,7 +15,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'first_name', 'last_name', 'email', 'password', 'provider', 'provider_id',
+        'first_name', 'last_name', 'email', 'password', 'provider', 'provider_id', 'image_url',
     ];
 
     /**
@@ -27,7 +27,31 @@ class User extends Authenticatable
         'password', 'remember_token', 'provider_id',
     ];
 
-    public function jobs() {
+    protected $dates = [
+        'created_at', 'updated_at', 'dob'
+    ];
+
+    /**
+     * The jobs that belong to the user.
+     */
+    public function jobs() 
+    {
         return $this->hasMany('Jobs');
+    }
+
+    /**
+     * The skills that belong to the user.
+     */
+    public function skills()
+    {
+        return $this->belongsToMany('App\Skill');
+    }
+
+    /**
+     * The interests that belong to the user.
+     */
+    public function interests()
+    {
+        return $this->belongsToMany('App\Interest');
     }
 }
