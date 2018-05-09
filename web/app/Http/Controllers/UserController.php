@@ -10,6 +10,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
@@ -57,7 +58,7 @@ class UserController extends Controller
             'address_line_2' => 'nullable|string',
             'address_city' => 'nullable|string',
             'address_postcode' => 'nullable|string',
-            'dob' => 'nullable|date',
+            'dob' => 'nullable|date_format:d/m/Y',
             'interests' => 'array',
             'skills' => 'array',
             'visibility' => 'string',
@@ -72,8 +73,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        $userId = Auth::user()->id;
-        $user = User::find($userId);
+        $user = Auth::user();
         $skills = Skill::all();
         $interests = Interest::all();
 
@@ -120,8 +120,7 @@ class UserController extends Controller
                 ->withInput();
         }
 
-        $userId = Auth::user()->id;
-        $user = User::find($userId);
+        $user = Auth::user();
 
         $user->first_name = $req->first_name;
         $user->last_name = $req->last_name;
@@ -131,14 +130,13 @@ class UserController extends Controller
         $user->address_line_2 = $req->address_line_2;
         $user->address_city = $req->address_city;
         $user->address_postcode = $req->address_postcode;
-        $user->dob = $req->dob;
+        $user->dob = \Carbon\Carbon::createFromFormat('d/m/Y', $req->dob);
         $user->visibility = $req->visibility === 'true';
         $user->notification = $req->notification === 'true';
 
         if($req->image) {
-            $imageName = 'profile'.time().'.'. $req->image->getClientOriginalExtension();
-            $req->image->move(public_path('images'), $imageName);
-            $user->image_url = '/images/' . $imageName ;
+            $image = $req->image->store($user->id);
+            $user->image_url = env('S3_URL') . '/avatars/' . $image;
         }
 
         $user->save();

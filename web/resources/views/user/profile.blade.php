@@ -142,7 +142,7 @@
                             <label for="dob" class="col-md-4 control-label">DOB</label>
 
                             <div class="col-md-6">
-                                <input id="dob" type="text" class="form-control" data-provide="datepicker" name="dob" value="{{ $user->dob }}">
+                                <input id="dob" type="text" class="form-control" data-provide="datepicker" name="dob" value="{{ $user->dob->format('d/m/Y') }}">
 
                                 @if ($errors->has('dob'))
                                     <span class="help-block">
@@ -156,7 +156,7 @@
                             <label for="interests" class="col-md-4 control-label">Interests</label>
 
                             <div class="col-md-6">
-                                <select id="interests" class="form-control selectpicker" multiple="multiple" name="interests[]">
+                                <select id="interests" class="form-control selectpicker" multiple="multiple" name="interests[]" data-live-search="true">
                                     @foreach ($interests as $interest)
                                       <option value={{$interest->id}} {{$interest->selected ? 'selected': ''}}>{{$interest->name}}</option>
                                     @endforeach
@@ -174,7 +174,7 @@
                             <label for="skills" class="col-md-4 control-label">Skills</label>
 
                             <div class="col-md-6">
-                                <select id="skills" class="form-control selectpicker" multiple="multiple" name="skills[]">
+                                <select id="skills" class="form-control selectpicker" multiple="multiple" name="skills[]" data-live-search="true">
                                     @foreach ($skills as $skill)
                                         <option value={{$skill->id}} {{$skill->selected ? 'selected': ''}}>{{$skill->name}}</option>
                                     @endforeach
@@ -231,43 +231,26 @@
 </div>
 @endsection
 
-
 @push('styles')
     <link href="{{ asset('/packages/bootstrap-datepicker/css/bootstrap-datepicker.min.css') }}" rel="stylesheet">
-
     <link href="{{ asset('/packages/bootstrap-select/css/bootstrap-select.min.css') }}" rel="stylesheet">
-
-
 @endpush
 
 @push('scripts')
-    
     <script type="text/javascript" src="{{ asset('/packages/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}"></script>
-
     <script type="text/javascript" src="{{ asset('/packages/bootstrap-select/js/bootstrap-select.min.js') }}"></script>
-
 @endpush
 
 @push('script-functions')
-    <script type="text/javascript">
-
-        $(document).ready(function() {
-
-            $('#dob').datepicker({  
-               format: 'mm/dd/Y'
-            });  
-            
-            $('#interests').selectpicker({
-                style: 'btn-info',
-                size: 2
-            });
-            
-            $('#skills').selectpicker({
-                style: 'btn-info',
-                size: 4
-            });
-        });
-
-    </script>
-
+<script type="text/javascript">
+    $(document).ready(function() {
+        $('#dob').datepicker({  
+           format: 'dd/mm/yyyy'
+        });  
+        
+        $('#interests').selectpicker();
+        
+        $('#skills').selectpicker();
+    });
+</script>
 @endpush

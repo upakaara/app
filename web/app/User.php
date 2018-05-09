@@ -27,6 +27,10 @@ class User extends Authenticatable
         'password', 'remember_token', 'provider_id',
     ];
 
+    protected $dates = [
+        'created_at', 'updated_at', 'dob'
+    ];
+
     /**
      * The skills that belong to the user.
      */

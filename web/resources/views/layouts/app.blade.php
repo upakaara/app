@@ -15,12 +15,6 @@
     <link href="{{ asset('/packages/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     @stack('styles')
-
-    <script type="text/javascript" src="{{ asset('/js/jquery.min.js') }}"></script>
-    <script type="text/javascript" src="{{ asset('/js/popper.min.js') }}"></script>
-    <script type="text/javascript" src="{{ asset('/packages/bootstrap/js/bootstrap.min.js') }}"></script>
-    @stack('scripts')
-
 </head>
 <body>
     <div id="app">
@@ -82,19 +76,21 @@
                 </div>
             </div>
         </nav>
+        
         @if(session()->has('success'))
-
             <div class="alert alert-success alert-block">
-
                 <button type="button" class="close" data-dismiss="alert">×</button>
                 <strong>{{ session()->get('success') }}</strong>
-
             </div>
         @endif
+
         @yield('content')
     </div>
 
-    <!-- Scripts -->
     <script src="{{ asset('js/app.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('/js/popper.min.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('/packages/bootstrap/js/bootstrap.min.js') }}"></script>
+    @stack('scripts')
+    @stack('script-functions')    
 </body>
 </html>
