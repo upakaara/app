@@ -1,0 +1,36 @@
+FROM malitta/php-base:7.2
+
+RUN apt-get update && apt-get install -y \
+	libmcrypt-dev \
+	libpq-dev \
+	zlib1g-dev \
+	zip
+
+RUN docker-php-ext-install \
+	pdo_pgsql \
+	opcache \
+	mbstring \
+	tokenizer \
+	zip
+
+# Move Apache and PHP config files
+COPY ./files/php/security.ini /usr/local/etc/php/conf.d/security.ini
+COPY ./files/apache/security.conf /etc/apache2/conf-available/security.conf
+COPY ./files/apache/http2.conf /etc/apache2/conf-available/http2.conf
+
+RUN a2enmod http2
+RUN a2enconf http2
+
+# Move supervisor worker config files inside the container.
+# Later, depending on the APP_MODE, the entrypoint (at runtime) will determine 
+# whether these should be moved inside the supervisor config folder or not.
+COPY ./files/workers /tmp/workers
+
+COPY ./files/docker-entrypoint.sh /usr/local/bin/docker-entrypoint
+RUN chmod +x /usr/local/bin/docker-entrypoint
+
+# Install Composer
+RUN curl -sS https://getcomposer.org/installer | \
+	php -- --install-dir=/usr/local/bin --filename=composer
+
+ENTRYPOINT ["docker-entrypoint"]

@@ -1,20 +1,40 @@
 version: '2'
-services: 
-  database:
+services:
+  db:
     image: postgres:9.5
     volumes:
       - "$PWD/docker/.data/db:/var/lib/postgresql/data"
     restart: always
     environment:
-      POSTGRES_DB: db
-      POSTGRES_USER: dbuser
+      POSTGRES_USER: upakaara
       POSTGRES_PASSWORD: upakaara
+      POSTGRES_DB: upakaara
   app:
+    image: upakaara-base
     build: 
       context: .
-    environment:
-      CONTAINER_TYPE: app
+      dockerfile: app.docker
     restart: always
+    volumes:
+      - "$PWD:/var/www"
+  laravel-mix:
+    image: node:8
+    user: node
+    working_dir: /home/node/app
+    volumes:
+      - "$PWD:/home/node/app"
+    command: "npm run watch"
   redis:
     image: redis
     restart: always
+    ports:
+      - 6378:6378
+  chrome:
+    image: robcherry/docker-chromedriver
+    environment:
+      CHROMEDRIVER_WHITELISTED_IPS: ""
+      CHROMEDRIVER_PORT: "9515"
+    ports:
+      - 9515:9515
+    cap_add:
+      - "SYS_ADMIN"
