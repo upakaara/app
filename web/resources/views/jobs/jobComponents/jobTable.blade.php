@@ -12,10 +12,10 @@
     <tbody>
         @foreach ($jobs as $job)
             <tr>
-                <td><a href={{ "jobs/".$job->id }}/>{{ $job->title }}</td>
+                <td><a href={{ url('jobs', [$job->id]) }}/>{{ $job->title }}</td>
                 <td>{{ $job->description }}</td>
                 <td></td>
-                <td>{{ $job->job_type }}</td>
+                <td>{{ $job->jobType->name }}</td>
                 <td>{{ $job->duration }}</td>
                 <td>{{ $job->status }}</td>
             </tr>

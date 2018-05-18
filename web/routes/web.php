@@ -22,7 +22,7 @@ Route::get('auth/{provider}', 'Auth\SocialAuthController@redirectToProvider');
 Route::get('auth/{provider}/callback', 'Auth\SocialAuthController@handleProviderCallback');
 
 //Jobs Routes
-Route::get('jobs', 'JobsController@index');
+Route::get('jobs', 'JobsController@index')->name('jobs');
 Route::get('/jobs/create', 'JobsController@create');
 Route::get('/jobs/{id}', 'JobsController@show');
 Route::post('jobs', 'JobsController@store');

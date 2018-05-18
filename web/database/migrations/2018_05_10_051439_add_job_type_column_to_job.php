@@ -31,6 +31,9 @@ class AddJobTypeColumnToJob extends Migration
     {
         Schema::table('jobs', function (Blueprint $table) {
             $table->dropForeign(['job_type_id']);
+            $table->dropColumn('duration');
+            $table->dropColumn('start_date');
+            $table->dropColumn('end_date');
         });
     }
 }

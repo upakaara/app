@@ -20,21 +20,26 @@ class JobsController extends Controller
      */
     public function index(Request $request)
     {
+      $user = Auth::user();
       $jobs = [];
       $type = $request->get('type');
-      if($type && $type === 'need_approval') {
-          if(Auth::user()->hasUserRole && Auth::user()->hasUserRole->hasRole->name === 'moderator')
-          $jobs = Job::where('owner_id', '!=', Auth::id())->where('status', 'approval')->orderBy('created_at', 'desc')->get();          
-      } else if($type && $type === 'my_jobs') {
-          $jobs = Job::where('owner_id', Auth::id())->orderBy('created_at', 'desc')->get();
+      if($type === 'need_approval') {
+          if($user->hasUserRole && $user->hasUserRole->hasRole->name === 'moderator')
+          $jobs = Job::where('owner_id', '!=', $user->id)
+              ->where('status', 'approval')
+              ->orderBy('created_at', 'desc')
+              ->get();          
+      } else if($type === 'my_jobs') {
+          $jobs = Job::where('owner_id', $user->id)
+              ->orderBy('created_at', 'desc')
+              ->get();
       } else {
-          $jobs = Job::where('owner_id', '!=', Auth::id())->where('status', '!=', 'approval')->orderBy('created_at', 'desc')->get();
+          $jobs = Job::where('owner_id', '!=', $user->id)
+              ->where('status', '!=', 'approval')
+              ->orderBy('created_at', 'desc')
+              ->get();
       }
-
-      foreach ($jobs as $job) {
-          $job['job_type'] = $job->jobType->name;
-      }
-
+      
       return view('jobs/index')->with('jobs', $jobs);
     }
 
@@ -58,7 +63,7 @@ class JobsController extends Controller
      */
     public function store(Request $request)
     {
-        $user = Auth::id();
+        $user = Auth::user();
         
         $validatedData = $request->validate([
             'title' => 'required|string|max:255',
@@ -74,7 +79,7 @@ class JobsController extends Controller
         $jobs->description = $data['description'];
         $jobs->job_type_id = $data['jobType'];
         $jobs->duration = $data['duration'];
-        $jobs->owner_id = $user;
+        $jobs->owner_id = $user->id;
         $jobs->save();
 
         Session::flash('success_message', 'Job Added Successfully');
