@@ -4,7 +4,8 @@ namespace App\Http\Controllers;
 
 use DB;
 use Session;
-use App\Jobs;
+use App\Job;
+use App\JobType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
@@ -17,9 +18,28 @@ class JobsController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-      $jobs = Jobs::orderBy('created_at', 'desc')->get();
+      $user = Auth::user();
+      $jobs = [];
+      $type = $request->get('type');
+      if($type === 'need_approval') {
+          if($user->hasUserRole && $user->hasUserRole->hasRole->name === 'moderator')
+          $jobs = Job::where('owner_id', '!=', $user->id)
+              ->where('status', 'approval')
+              ->orderBy('created_at', 'desc')
+              ->get();          
+      } else if($type === 'my_jobs') {
+          $jobs = Job::where('owner_id', $user->id)
+              ->orderBy('created_at', 'desc')
+              ->get();
+      } else {
+          $jobs = Job::where('owner_id', '!=', $user->id)
+              ->where('status', '!=', 'approval')
+              ->orderBy('created_at', 'desc')
+              ->get();
+      }
+      
       return view('jobs/index')->with('jobs', $jobs);
     }
 
@@ -30,7 +50,9 @@ class JobsController extends Controller
      */
     public function create(Request $request)
     {
-        return view('jobs/create');
+        $jobTypes = JobType::all();
+        return view('jobs/create')
+            ->with('jobTypes', $jobTypes);;
     }
 
     /**
@@ -41,20 +63,23 @@ class JobsController extends Controller
      */
     public function store(Request $request)
     {
-        $user = Auth::id();
+        $user = Auth::user();
         
         $validatedData = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string|max:255',
+            'jobType' => 'required|integer',
+            'duration' => 'required|integer',
         ]);
         
         $data = $request->input();
-
-        $jobs = new Jobs;
+        $jobs = new Job;
         $jobs->title = $data['title'];
         $jobs->summary = $data['summary'];
         $jobs->description = $data['description'];
-        $jobs->owner_id = $user;
+        $jobs->job_type_id = $data['jobType'];
+        $jobs->duration = $data['duration'];
+        $jobs->owner_id = $user->id;
         $jobs->save();
 
         Session::flash('success_message', 'Job Added Successfully');
@@ -69,7 +94,7 @@ class JobsController extends Controller
      */
     public function show($id)
     {
-        $job = Jobs::find($id);
+        $job = Job::find($id);
 
         if ( $job ) {
             return view('jobs/show')
@@ -108,7 +133,7 @@ class JobsController extends Controller
      */
     public function destroy($id)
     {
-        $job = Jobs::find($id);
+        $job = Job::find($id);
         $job->delete();
 
         Session::flash('success_message', 'Successfully removed the job!');

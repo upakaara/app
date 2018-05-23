@@ -15,7 +15,7 @@
                             <label for="title" class="col-md-4 control-label">Title</label>
 
                             <div class="col-md-6">
-                                <input id="title" type="text" class="form-control" name="title" autofocus>
+                                <input id="title" type="text" class="form-control" name="title" autofocus value="{{ old('title') }}">
                             </div>
                         </div>
 
@@ -23,7 +23,7 @@
                             <label for="description" class="col-md-4 control-label">Description</label>
 
                             <div class="col-md-6">
-                                <textarea id="description" type="text" name="description" class="form-control"></textarea>
+                                <textarea id="description" type="text" name="description" class="form-control">{{ old('description') }}</textarea>
                             </div>
                         </div>
 
@@ -31,9 +31,30 @@
                             <label for="summary" class="col-md-4 control-label">Summary</label>
 
                             <div class="col-md-6">
-                                <textarea id="summary" type="text" name="summary" class="form-control"></textarea>
+                                <textarea id="summary" type="text" name="summary" class="form-control">{{ old('summary') }}</textarea>
                             </div>
                         </div>
+
+                        <div class="form-group">
+                            <label for="jobTypes" class="col-md-4 control-label">Job Type</label>
+
+                            <div class="col-md-6">
+                                <select id="jobTypes" class="form-control selectpicker" name="jobType">
+                                    @foreach ($jobTypes as $jobType)
+                                        <option value={{$jobType->id}} {{$jobType->selected ? 'selected': ''}}>{{$jobType->name}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="duration" class="col-md-4 control-label">Duration</label>
+
+                            <div class="col-md-6">
+                                <input id="duration" type="text" name="duration" class="form-control" placeholder="Duration in number of days" value="{{ old('duration') }}">
+                            </div>
+                        </div>
+
                         <div class="form-group">
                             <div class="col-md-2 col-md-offset-4">
                                 <button type="submit" class="btn btn-primary">
@@ -63,3 +84,19 @@
     </div>
 </div>
 @endsection
+
+@push('styles')
+    <link href="{{ asset('/packages/bootstrap-select/css/bootstrap-select.min.css') }}" rel="stylesheet">
+@endpush
+
+@push('scripts')
+    <script type="text/javascript" src="{{ asset('/packages/bootstrap-select/js/bootstrap-select.min.js') }}"></script>
+@endpush
+
+@push('script-functions')
+<script type="text/javascript">
+    $(document).ready(function() {
+        $('#jobTypes').selectpicker();
+    });
+</script>
+@endpush

@@ -3,7 +3,7 @@
 @section('content')
 <div class="container">
     <div class="modal fade" tabindex="-1" role="dialog" id="confimationModal">
-        <div class="modal-dialog modal-sm">
+        <div class="modal-dialog modal-md">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -13,8 +13,8 @@
                     <form method="post" action="/jobs/{{ $job->id }}">
                         {{ method_field('DELETE') }}
                         <input type="hidden" name="_token" value="{{ csrf_token() }}">  
-                        <button type="submit" class="btn btn-default">Yes</button>
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                        <button type="submit" class="btn btn-default btn-lg">Yes</button>
+                        <button type="button" class="btn btn-secondary btn-lg" data-dismiss="modal">No</button>
                     </form>
                 </div>
             </div>
@@ -24,16 +24,18 @@
         <div class="col-md-8 col-md-offset-2">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                      <div class="row">
-                          <div class="col-md-6">{{ $job->title }}</div>
-                          <div class="col-md-6">
-                              <span class="pull-right">
-                                  <button type="button" class="btn btn-default" data-toggle="modal" data-target="#confimationModal">
-                                      Remove Job
-                                  </button>
-                              </span>
-                          </div>
-                      </div>
+                    <div class="row">
+                        <div class="col-md-6">{{ $job->title }}</div>
+                        <div class="col-md-6">
+                              @if ($job->owner_id === Auth::user()->id)
+                                <span class="pull-right">
+                                    <button type="button" class="btn btn-default" data-toggle="modal" data-target="#confimationModal">
+                                        Remove Job
+                                    </button>
+                                </span>
+                            @endif
+                        </div>
+                    </div>
                 </div>
                 <div class="panel-heading">
                     {{ $job->description }}
