@@ -62,4 +62,8 @@ class User extends Authenticatable
     {
         return $this->hasOne('App\RoleUser');
     }
+
+    public function alreadyJoinedJob($jobId) {
+        return $jobUsers = \App\JobUser::where('user_id', $this->id)->where('job_id', $jobId)->exists();
+    }
 }
