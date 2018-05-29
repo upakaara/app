@@ -15,4 +15,9 @@ class JobType extends Model
     public function jobs() {
         return $this->hasMany('App\Job');
     }
+
+    public function skills()
+    {
+        return $this->hasMany('App\JobTypeSkill');
+    }
 }

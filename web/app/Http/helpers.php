@@ -11,7 +11,11 @@ if (!function_exists('is_active')) {
         $route = is_array($route) ? $route : [$route];
 
         $active = (count(array_filter($route, function($item) {
-          return $item === request()->get("type");
+            $type = request()->get("type");
+            if($item === 'jobs' && $type === null) {
+                return true;
+            }
+            return $item === $type;
         })) > 0);
 
         return ($active) ? 'active' : '';

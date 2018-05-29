@@ -28,6 +28,10 @@ Route::get('/jobs/{id}', 'JobsController@show');
 Route::post('jobs', 'JobsController@store');
 Route::delete('/jobs/{id}', 'JobsController@destroy');
 
+//JobUsers Routes
+Route::post('job_user', 'JobUsersController@store')->name('job_user');
+Route::delete('job_user/{id}', 'JobUsersController@destroy');
+
 Route::get('/home', 'HomeController@index')->name('home');
 
 Route::get('user/profile', 'UserController@index')->name('profile');

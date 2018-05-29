@@ -20,27 +20,48 @@ class JobsController extends Controller
      */
     public function index(Request $request)
     {
-      $user = Auth::user();
-      $jobs = [];
-      $type = $request->get('type');
-      if($type === 'need_approval') {
-          if($user->hasUserRole && $user->hasUserRole->hasRole->name === 'moderator')
-          $jobs = Job::where('owner_id', '!=', $user->id)
-              ->where('status', 'approval')
-              ->orderBy('created_at', 'desc')
-              ->get();          
-      } else if($type === 'my_jobs') {
-          $jobs = Job::where('owner_id', $user->id)
-              ->orderBy('created_at', 'desc')
-              ->get();
-      } else {
-          $jobs = Job::where('owner_id', '!=', $user->id)
-              ->where('status', '!=', 'approval')
-              ->orderBy('created_at', 'desc')
-              ->get();
-      }
-      
-      return view('jobs/index')->with('jobs', $jobs);
+        $user = Auth::user();
+        $jobs = [];
+        $type = $request->get('type');
+        if($type === 'need_approval') {
+            if($user->hasUserRole && $user->hasUserRole->hasRole->name === 'moderator')
+            $jobs = Job::where('owner_id', '!=', $user->id)
+                ->where('status', 'approval')
+                ->orderBy('created_at', 'desc')
+                ->get();          
+        } else if($type === 'my_jobs') {
+            $jobs = Job::where('owner_id', $user->id)
+                ->orderBy('created_at', 'desc')
+                ->get();
+        } else if($type && $type === 'recommended_jobs') {
+              $jobTypeIds = [];
+              $userSkills = $user->skills;
+              $userInterests = $user->interests;
+              foreach ($userSkills as $skill) {
+                  foreach ($skill->jobTypeSkill as $skillJobType) {
+                      $jobTypeIds[] = $skillJobType->jobType->id;
+                  }
+              }
+
+              foreach ($userInterests as $interest) {
+                  foreach ($interest->jobTypeInterest as $interestJobType) {
+                      $jobTypeIds[] = $interestJobType->jobType->id;
+                  }
+              }
+              $uniqueJobTypes = array_unique($jobTypeIds);
+              $jobs = Job::where('owner_id', '!=', $user->id)
+                  ->where('job_type_id', $uniqueJobTypes)
+                  ->where('status', '!=', 'approval')
+                  ->orderBy('created_at', 'desc')
+                  ->get();
+        } else {
+            $jobs = Job::where('owner_id', '!=', $user->id)
+                ->where('status', '!=', 'approval')
+                ->orderBy('created_at', 'desc')
+                ->get();
+        }
+        
+        return view('jobs/index')->with('jobs', $jobs);
     }
 
     /**
