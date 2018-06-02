@@ -59,6 +59,12 @@
                                         <a href="{{ route('profile') }}">Update Profile</a>
                                     </li>
                                     <li>
+                                        <a href="{{ route('public.index', [
+                                            'id' => Auth::user()->id,
+                                            'tab' => 'profile'
+                                        ]) }}">Public Profile</a>
+                                    </li>
+                                    <li>
                                         <a href="{{ route('logout') }}"
                                             onclick="event.preventDefault();
                                                      document.getElementById('logout-form').submit();">

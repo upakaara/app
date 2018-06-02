@@ -33,3 +33,5 @@ Route::get('/home', 'HomeController@index')->name('home');
 Route::get('user/profile', 'UserController@index')->name('profile');
 
 Route::put('user/profile/update', 'UserController@update')->name('user.update');
+
+Route::get('public/user/{id}/{tab}', 'UserController@publicDetails')->name('public.index');

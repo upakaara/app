@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Auth;
 use App\User;
+use App\Jobs;
 use App\Skill;
 use App\Interest;
 use App\Http\Controllers\Controller;
@@ -30,7 +31,7 @@ class UserController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth');
+        $this->middleware('auth', ['except' => ['view']]);
     }
 
     /**
@@ -110,7 +111,6 @@ class UserController extends Controller
      */
     protected function update(Request $req)
     {
-        // dd($req);
         $validator = $this->validator($req->all());
 
         if ($validator->fails()) {
@@ -157,5 +157,12 @@ class UserController extends Controller
         }
 
         return redirect()->back()->with('success', 'Successfully update user profile.');
+    }
+
+    public function publicDetails($id, $tab)
+    {
+        $user = User::find($id);
+
+        return view('public.index', ['user' => $user, 'id'=> $id,'tab' => $tab]);
     }
 }

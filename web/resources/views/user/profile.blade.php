@@ -142,7 +142,7 @@
                             <label for="dob" class="col-md-4 control-label">DOB</label>
 
                             <div class="col-md-6">
-                                <input id="dob" type="text" class="form-control" data-provide="datepicker" name="dob" value="{{ $user->dob->format('d/m/Y') }}">
+                                <input id="dob" type="text" class="form-control" data-provide="datepicker" name="dob" value="{{ $user->dob ? $user->dob->format('d/m/Y') : '' }}">
 
                                 @if ($errors->has('dob'))
                                     <span class="help-block">
