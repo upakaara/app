@@ -8,7 +8,7 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'upakaara') }}</title>
+    <title>{{ config('app.name', 'Upakaara') }}</title>
 
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
@@ -103,7 +103,7 @@
         });
     </script>
     <script type="text/javascript" src="{{ asset('/js/popper.min.js') }}"></script>
-    <script type="text/javascript" src="{{ asset('/packages/bootstrap/js/bootstrap.min.js') }}"></script>
+    <script type="text/javascript" src="js/bootstrap.min.js"></script>
     @stack('scripts')
     @stack('script-functions')    
 </body>

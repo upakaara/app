@@ -5,7 +5,11 @@ namespace App\Http\Controllers;
 use DB;
 use Session;
 use App\Job;
+use App\JobUser;
 use App\JobType;
+use App\JobVacancy;
+use App\JobVacancySkill;
+use App\Skill;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
@@ -34,29 +38,75 @@ class JobsController extends Controller
                 ->orderBy('created_at', 'desc')
                 ->get();
         } else if($type && $type === 'recommended_jobs') {
-              $jobTypeIds = [];
-              $userSkills = $user->skills;
-              $userInterests = $user->interests;
-              foreach ($userSkills as $skill) {
-                  foreach ($skill->jobTypeSkill as $skillJobType) {
-                      $jobTypeIds[] = $skillJobType->jobType->id;
+              $jobVacancyIds = [];
+              $joinedJobIds = [];
+
+              $joinedJobs = JobUser::where('user_id', $user->id)
+                  ->select('job_id')
+                  ->get();
+
+                  foreach ($joinedJobs as $joinedJob) {
+                  $joinedJobIds[] = $joinedJob->job_id;
+              }
+
+              foreach ($user->skills as $skill) {
+                  foreach ($skill->jobVacancySkill as $jobVacancySkill) {
+                    $jobVacancyIds[] = $jobVacancySkill->job_vacancy_id;
                   }
               }
 
-              foreach ($userInterests as $interest) {
-                  foreach ($interest->jobTypeInterest as $interestJobType) {
-                      $jobTypeIds[] = $interestJobType->jobType->id;
-                  }
+              $jobVacancyIds = array_unique($jobVacancyIds);
+
+              $jobVacancies = JobVacancy::find($jobVacancyIds);
+
+              $jobIds = [];
+
+              foreach ($jobVacancies as $vacancy) {
+                  $jobIds[] = $vacancy->job_id;
               }
-              $uniqueJobTypes = array_unique($jobTypeIds);
-              $jobs = Job::where('owner_id', '!=', $user->id)
-                  ->where('job_type_id', $uniqueJobTypes)
-                  ->where('status', '!=', 'approval')
-                  ->orderBy('created_at', 'desc')
-                  ->get();
+
+              // $userInterests = $user->interests;
+
+              // foreach ($userInterests as $interest) {
+              //     foreach ($interest->jobTypeInterest as $interestJobType) {
+              //         $jobTypeIds[] = $interestJobType->jobType->id;
+              //     }
+              // }
+              $jobIds = array_unique($jobIds);
+              $jobs = Job::whereIn('id', $jobIds)
+                ->whereNotIn('id', $joinedJobIds)
+                ->where('owner_id', '!=', $user->id)
+                ->where('status', '!=', 'approval')
+                ->orderBy('created_at', 'desc')
+                ->get();
+        } else if($type === 'joined_jobs') {
+            $joinedJobIds = [];
+
+            $joinedJobs = JobUser::where('user_id', $user->id)
+                ->select('job_id')
+                ->get();
+
+            foreach ($joinedJobs as $joinedJob) {
+                $joinedJobIds[] = $joinedJob->job_id;
+            }
+            
+            $jobs = Job::whereIn('id', $joinedJobIds)
+                ->orderBy('created_at', 'desc')
+                ->get();
         } else {
+            $joinedJobIds = [];
+
+            $joinedJobs = JobUser::where('user_id', $user->id)
+                ->select('job_id')
+                ->get();
+
+            foreach ($joinedJobs as $joinedJob) {
+                $joinedJobIds[] = $joinedJob->job_id;
+            }
+            
             $jobs = Job::where('owner_id', '!=', $user->id)
                 ->where('status', '!=', 'approval')
+                ->whereNotIn('id', $joinedJobIds)
                 ->orderBy('created_at', 'desc')
                 ->get();
         }
@@ -73,7 +123,7 @@ class JobsController extends Controller
     {
         $jobTypes = JobType::all();
         return view('jobs/create')
-            ->with('jobTypes', $jobTypes);;
+            ->with('jobTypes', $jobTypes);
     }
 
     /**
@@ -85,14 +135,13 @@ class JobsController extends Controller
     public function store(Request $request)
     {
         $user = Auth::user();
-        
         $validatedData = $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'required|string|max:255',
-            'jobType' => 'required|integer',
-            'duration' => 'required|integer',
-        ]);
-        
+          'title' => 'required|string|max:255',
+          'description' => 'required|string|max:255',
+          'jobType' => 'required|integer',
+          'duration' => 'required|integer',
+          ]);
+          
         $data = $request->input();
         $jobs = new Job;
         $jobs->title = $data['title'];
@@ -102,6 +151,21 @@ class JobsController extends Controller
         $jobs->duration = $data['duration'];
         $jobs->owner_id = $user->id;
         $jobs->save();
+        
+        $jobVacancy = new JobVacancy;
+        $jobVacancy->job_id = $jobs->id;
+        $jobVacancy->requested_by = $user->id;
+        $jobVacancy->save();
+        
+        $jobTypes = JobType::find($data['jobType']);
+        $jobTypeSkills = $jobTypes->skills;
+
+        foreach($jobTypeSkills as $jobTypeSkill){
+            $jobVacancySkills = new JobVacancySkill;
+            $jobVacancySkills->job_vacancy_id = $jobVacancy->id;
+            $jobVacancySkills->skill_id = $jobTypeSkill->skill_id;
+            $jobVacancySkills->save();
+        }
 
         Session::flash('success_message', 'Job Added Successfully');
         return Redirect::to('jobs');
@@ -116,10 +180,12 @@ class JobsController extends Controller
     public function show($id)
     {
         $job = Job::find($id);
+        $skills = Skill::all();
 
         if ( $job ) {
             return view('jobs/show')
-                ->with('job', $job);
+                ->with('job', $job)
+                ->with('skills', $skills);
         }
     }
 

@@ -8,6 +8,11 @@ class Skill extends Model
 {
     public function jobTypeSkill()
     {
-        return $this->hasMany('App\JobTypeSkill');
+        return $this->hasOne('App\JobTypeSkill');
+    }
+
+    public function jobVacancySkill()
+    {
+        return $this->hasMany('App\JobVacancySkill');
     }
 }
