@@ -23,6 +23,6 @@ class Job extends Model
 
     // Each job hAS one jobtype
     public function jobType() {
-      return $this->belongsTo(JobType::class);
+        return $this->belongsTo('App\JobType');
     }
 }

@@ -10,6 +10,7 @@
                         <ul class="nav nav-tabs nav-justified">
                             <li class="{{ is_active('jobs') }}"><a href="{{ route('jobs', ['type' => 'jobs']) }}">Job Listing</a></li>
                             <li class="{{ is_active('recommended_jobs') }}"><a href="{{ route('jobs', ['type' => 'recommended_jobs']) }}">Recomended Jobs For Me</a></li>
+                            <li class="{{ is_active('joined_jobs') }}"><a href="{{ route('jobs', ['type' => 'joined_jobs']) }}">Joined Jobs</a></li>
                             <li class="{{ is_active('my_jobs') }}"><a href="{{ route('jobs', ['type' => 'my_jobs']) }}">My Created Jobs</a></li>
                             @if(Auth::user()->hasUserRole && Auth::user()->hasUserRole->hasRole->name === 'moderator')
                               <li class="{{ is_active('need_approval') }}"><a href="{{ route('jobs', ['type' => 'need_approval']) }}">Need Approval</a></li>

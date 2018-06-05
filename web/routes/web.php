@@ -32,7 +32,9 @@ Route::delete('/jobs/{id}', 'JobsController@destroy');
 Route::post('job_user', 'JobUsersController@store')->name('job_user');
 Route::delete('job_user/{id}', 'JobUsersController@destroy');
 
-Route::get('/home', 'HomeController@index')->name('home');
+Route::get('/home', function () {
+    return redirect()->route('jobs');
+});
 
 Route::get('user/profile', 'UserController@index')->name('profile');
 

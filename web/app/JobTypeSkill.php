@@ -12,4 +12,9 @@ class JobTypeSkill extends Model
     {
         return $this->belongsTo('App\JobType');
     }
+
+    public function skill()
+    {
+        return $this->hasOne('App\Skill', 'id', 'skill_id');
+    }
 }
