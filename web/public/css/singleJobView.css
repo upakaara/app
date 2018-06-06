@@ -1,0 +1,16 @@
+.pb-cmnt-container {
+    font-family: Lato;
+}
+
+.singlejob-cmnt-area {
+  width: 100%;
+  border: 1px solid #F2F2F2;  
+}
+
+.singlejob-cmnt-textarea {
+    resize: none;
+    padding: 20px;
+    height: 100px;
+    width: 100%;
+    border: 1px solid #F2F2F2;
+}

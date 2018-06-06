@@ -68,68 +68,126 @@
                 <div class="panel-heading">
                     {{ $job->description }}
                 </div>
-                <div class="panel-body">
-                    <div class="col-md-12">
-                        <div>
-                          <span class="chat-img pull-left">
-                            <img src="http://placehold.it/50/55C1E7/fff&text=JS" alt="User Avatar" class="img-circle" />
-                          </span>
-                          <div class="chat-body clearfix">
-                              <div class="header">
-                                  <strong class="primary-font">Jack Sparrow</strong> <small class="pull-right text-muted">
-                                  <span class="glyphicon glyphicon-time"></span>12 mins ago</small>
-                              </div>
-                              <p>
-                                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur bibendum ornare dolor, quis ullamcorper ligula sodales.
-                              </p>
-                          </div>
-                        </div>
-                        <div>
-                          <span class="chat-img pull-left">
-                            <img src="http://placehold.it/50/FA6F57/fff&text=BP" alt="User Avatar" class="img-circle" />
-                          </span>
-                          <div class="chat-body clearfix">
-                              <div class="header">
-                                  <strong class="primary-font">Bhaumik Patel</strong> <small class="pull-right text-muted">
-                                  <span class="glyphicon glyphicon-time"></span>13 mins ago</small>
-                              </div>
-                              <p>
-                                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur bibendum ornare dolor, quis ullamcorper ligula sodales.
-                              </p>
-                          </div>
-                        </div>
-                    <div>
-                </div>
-                <div class="panel-footer">
-                    <div class="input-group">
-                        <input id="btn-input" type="text" class="form-control input-sm" placeholder="Type your message here..." />
-                        <span class="input-group-btn">
-                            <button class="btn btn-warning btn-sm" id="btn-chat">Send</button>
-                        </span>
-                    </div>
-                </div>
             </div>
         </div>
+        @if ($job->owner_id === Auth::user()->id || $job->jobUser)
+            <div id="jobComments"></div>
+            <div class="container pb-cmnt-container">
+              <div class="row">
+                <div class="col-md-8 col-md-offset-2">
+                  <div class="panel panel-info">
+                    <div class="panel-body">
+                      <form class="form-inline" id="commentForm" method="POST" action="/comment">
+                        {{ csrf_field() }}
+                        <input type="hidden" name="job_id" value="{{ $job->id }}">
+                        <textarea
+                        id="commentArea"
+                        placeholder="Write your comment here!"
+                        name="comment"
+                        class="singlejob-cmnt-textarea"
+                        ></textarea>
+                        <div class="btn-group">
+                          <label class="btn">
+                            <span class="fa fa-picture-o fa-lg"></span>
+                            <input type="file" style="display: none;">
+                          </label>
+                        </div>
+                        <button class="btn btn-primary pull-right" type="submit">Comment</button>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+        @endif
     </div>
 </div>
 @endsection
 
 @push('script-functions')
-<script type="text/javascript">
-    $(function() {
-        $('#confirmationModal').on("show.bs.modal", function (e) {
-            var values = $(e.relatedTarget);
-            $("#confirmationModalTitle").html(values.data('title'));
-            $("#confirmationForm").attr("action", values.data('action'));
-            $("#formHiddenField").attr("name", values.data('name'));
-            $("#formHiddenField").val(values.data('value'));
+    <script type="text/javascript">
+        $(function() {
+            function getComments() {
+                var job_id = <?php echo json_encode($job->id); ?>;
+                $.ajax({
+                    url: '/comments',
+                    type: 'POST',
+                    data: {_token: $('meta[name="csrf-token"]').attr('content'), job_id},
+                    dataType: 'JSON',
+                    success: function (data) { 
+                        $("#jobComments").html(data.html);
+                    },
+                    error: function(data) {
+                      console.log('Error: ', data);
+                    }
+                }); 
+            }
+            
+            getComments();
+            
+            $('#confirmationModal').on("show.bs.modal", function (e) {
+                var values = $(e.relatedTarget);
+                $("#confirmationModalTitle").html(values.data('title'));
+                $("#confirmationForm").attr("action", values.data('action'));
+                $("#formHiddenField").attr("name", values.data('name'));
+                $("#formHiddenField").val(values.data('value'));
+                if(values.data('ajax')) {
+                  $("#confirmationForm").submit(function(e1) {
+                    e1.preventDefault();
+                    $.ajax({
+                        url: values.data('action'),
+                        type: 'DELETE',
+                        data: {_token: $('meta[name="csrf-token"]').attr('content')},
+                        dataType: 'JSON',
+                        success: function (data) {
+                          if(data.success) {
+                            $('#confirmationModal').modal('toggle');
+                            getComments();
+                          } else {
+                            console.log('Errors: ',data);
+                          }
+                        },
+                        error: function(data) {
+                          console.log('Error: ', data);
+                        }
+                    });
+                    $(this).unbind();
+                  });
+                }
+            });
+            
+            $('#commentForm').submit(function(e) {
+                e.preventDefault();
+                var $inputs = $('#commentForm :input');
+                var values = {};
+                $inputs.each(function() {
+                    values[this.name] = $(this).val();
+                });
+                $.ajax({
+                    url: '/comment',
+                    type: 'POST',
+                    data: {_token: $('meta[name="csrf-token"]').attr('content'), ...values},
+                    dataType: 'JSON',
+                    success: function (data) {
+                      if(data.success) {
+                        $('#commentArea').val('');
+                        getComments();
+                      } else {
+                        console.log('Errors: ',data);
+                      }
+                    },
+                    error: function(data) {
+                      console.log('Error: ', data);
+                    }
+                });
+            });
         });
-    });
-</script>
+    </script>
 @endpush
 
 @push('styles')
     <link href="{{ asset('/packages/bootstrap-select/css/bootstrap-select.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/singleJobView.css') }}" rel="stylesheet">
 @endpush
 
 @push('scripts')

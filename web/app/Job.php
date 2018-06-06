@@ -25,4 +25,13 @@ class Job extends Model
     public function jobType() {
         return $this->belongsTo('App\JobType');
     }
+    
+    // Each job has many comments
+    public function comments() {
+        return $this->hasMany('App\Comment');
+    }
+    
+    public function jobUser() {
+        return $this->hasOne('App\JobUser');
+    }
 }
