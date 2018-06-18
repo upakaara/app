@@ -21,26 +21,28 @@ Auth::routes();
 Route::get('auth/{provider}', 'Auth\SocialAuthController@redirectToProvider');
 Route::get('auth/{provider}/callback', 'Auth\SocialAuthController@handleProviderCallback');
 
-//Jobs Routes
-Route::get('jobs', 'JobsController@index')->name('jobs');
-Route::get('/jobs/create', 'JobsController@create');
-Route::get('/jobs/{id}', 'JobsController@show');
-Route::post('jobs', 'JobsController@store');
-Route::delete('/jobs/{id}', 'JobsController@destroy');
+Route::group(['middleware' => ['auth']], function() {
+    Route::get('/home', function () {
+      return redirect()->route('jobs');
+    });
 
-//JobUsers Routes
-Route::post('job_user', 'JobUsersController@store')->name('job_user');
-Route::delete('job_user/{id}', 'JobUsersController@destroy');
-
-// User comments Routes
-Route::post('comments', 'CommentsController@index')->name('comments');
-Route::post('comment', 'CommentsController@store')->name('comment');
-Route::delete('comment/{id}', 'CommentsController@destroy');
-
-Route::get('/home', function () {
-    return redirect()->route('jobs');
+    //Jobs Routes
+    Route::get('jobs', 'JobsController@index')->name('jobs');
+    Route::get('/jobs/create', 'JobsController@create');
+    Route::get('/jobs/{id}', 'JobsController@show');
+    Route::post('jobs', 'JobsController@store');
+    Route::delete('/jobs/{id}', 'JobsController@destroy');
+    
+    //JobUsers Routes
+    Route::post('job_user', 'JobUsersController@store')->name('job_user');
+    Route::delete('job_user/{id}', 'JobUsersController@destroy');
+    
+    // User comments Routes
+    Route::post('comments', 'CommentsController@index')->name('comments');
+    Route::post('comment', 'CommentsController@store')->name('comment');
+    Route::delete('comment/{id}', 'CommentsController@destroy');
+        
+    Route::get('user/profile', 'UserController@index')->name('profile');
+    
+    Route::put('user/profile/update', 'UserController@update')->name('user.update');
 });
-
-Route::get('user/profile', 'UserController@index')->name('profile');
-
-Route::put('user/profile/update', 'UserController@update')->name('user.update');

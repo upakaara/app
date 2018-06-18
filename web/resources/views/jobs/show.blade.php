@@ -86,13 +86,20 @@
                         name="comment"
                         class="singlejob-cmnt-textarea"
                         ></textarea>
-                        <div class="btn-group">
-                          <label class="btn">
-                            <span class="fa fa-picture-o fa-lg"></span>
-                            <input type="file" style="display: none;">
-                          </label>
+                        <div class="row">
+                          <div class="col-xs-6">
+                            <div class="btn-group">
+                              <label class="btn">
+                                <span class="fa fa-picture-o fa-lg"></span>
+                                <input type="file" name="image" id="image_upload" style="display: none;">
+                              </label>
+                            </div>
+                            <div id="image_preview"></div>
+                          </div>
+                          <div class="col-xs-6">
+                          <button class="btn btn-primary pull-right" type="submit">Comment</button>
                         </div>
-                        <button class="btn btn-primary pull-right" type="submit">Comment</button>
+                        </div>
                       </form>
                     </div>
                   </div>
@@ -158,16 +165,30 @@
             
             $('#commentForm').submit(function(e) {
                 e.preventDefault();
-                var $inputs = $('#commentForm :input');
-                var values = {};
-                $inputs.each(function() {
-                    values[this.name] = $(this).val();
-                });
+                // var $inputs = $('#commentForm :input');
+                // var values = {};
+                // var image = document.getElementById("image_upload").files;
+                // $inputs.each(function() {
+                //   if(this.name === 'image') {
+                //     values[this.name] = image;
+                //   } else {
+                //     values[this.name] = $(this).val();
+                //   }
+                // });
+                // var fileInput = document.getElementById('image_upload');
+                // var file = fileInput.files[0];
+                // var formData = {};
+                // formData.image = file;
+                // console.log(formData);
+                var formData = new FormData($("#commentForm")[0]);
                 $.ajax({
                     url: '/comment',
                     type: 'POST',
-                    data: {_token: $('meta[name="csrf-token"]').attr('content'), ...values},
+                    data:formData,
                     dataType: 'JSON',
+                    async:false,
+                    processData: false,
+                    contentType: false,
                     success: function (data) {
                       if(data.success) {
                         $('#commentArea').val('');
@@ -181,6 +202,12 @@
                     }
                 });
             });
+            
+            $("#image_upload").change(function() {
+              $('#image_preview').html("");
+              var image=document.getElementById("image_upload").files[0];
+              $('#image_preview').html(image.name);
+           });
         });
     </script>
 @endpush

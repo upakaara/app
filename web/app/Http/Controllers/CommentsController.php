@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Comment;
-use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Facades\Auth;
-use Symfony\Component\HttpFoundation\Response;
 use \Validator;
+use App\Comment;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Redirect;
+use Symfony\Component\HttpFoundation\Response;
 
 class CommentsController extends Controller
 {
@@ -38,6 +39,7 @@ class CommentsController extends Controller
     public function store(Request $request)
     {
         $user = Auth::user();
+        $data = $request->input();
 
         $validatedData = Validator::make($request->all(), [
           'comment' => 'required|string',
@@ -48,12 +50,28 @@ class CommentsController extends Controller
             return response()->json(['success'=>false, 'message'=>$validatedData->messages()]);
         }
         
+        if ($request->hasFile('image')) {
+          $validatedData1 = Validator::make($request->all(), [
+            'image' => 'mimes:jpeg,bmp,png',
+          ]);
+          
+          if ($validatedData1->fails()) {
+              return response()->json(['success'=>false, 'message'=>$validatedData->messages()]);
+          }
+        }
+        
         try {
-            $data = $request->input();
+            $data = $request->all();
             $comment = new Comment;
             $comment->job_id = $data['job_id'];
             $comment->comment = $data['comment'];
             $comment->author = $user->id;
+
+            if($request->image) {
+                $image = $request->image->store('comment_images');
+                $comment->image_url = env('S3_URL') . '/'.env('S3_BUCKET').'/' . $image;
+            }
+            
             $comment->save();
             return response()->json(['success'=>true]);
         } catch (\Exception $e) {

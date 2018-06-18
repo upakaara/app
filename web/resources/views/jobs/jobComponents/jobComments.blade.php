@@ -20,7 +20,12 @@
               </div>
               <div class="panel-body">
                 {{ $comment->comment }}
-              </div>  
+              </div> 
+              @if ($comment->image_url) 
+                  <div>
+                      <img src={{ $comment->image_url }}  style="width:200px;height:200px; border-radius: 10px;">
+                  </div>
+              @endif
             </div>
         </div>
     </div>
