@@ -10,6 +10,7 @@ use App\JobType;
 use App\JobVacancy;
 use App\JobVacancySkill;
 use App\Skill;
+use App\Comment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
@@ -180,11 +181,16 @@ class JobsController extends Controller
     public function show($id)
     {
         $job = Job::find($id);
+        $comments = Comment::where('job_id', $id)
+            ->with(array('user'=>function($query){
+                $query->select('id', 'first_name', 'last_name');
+            }))->get();
         $skills = Skill::all();
 
         if ( $job ) {
             return view('jobs/show')
                 ->with('job', $job)
+                ->with('comments', $comments)
                 ->with('skills', $skills);
         }
     }
