@@ -213,10 +213,5 @@
 @endpush
 
 @push('styles')
-    <link href="{{ asset('/packages/bootstrap-select/css/bootstrap-select.min.css') }}" rel="stylesheet">
     <link href="{{ asset('css/singleJobView.css') }}" rel="stylesheet">
-@endpush
-
-@push('scripts')
-    <script type="text/javascript" src="{{ asset('/packages/bootstrap-select/js/bootstrap-select.min.js') }}"></script>
 @endpush

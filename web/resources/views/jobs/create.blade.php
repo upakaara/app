@@ -85,14 +85,6 @@
 </div>
 @endsection
 
-@push('styles')
-    <link href="{{ asset('/packages/bootstrap-select/css/bootstrap-select.min.css') }}" rel="stylesheet">
-@endpush
-
-@push('scripts')
-    <script type="text/javascript" src="{{ asset('/packages/bootstrap-select/js/bootstrap-select.min.js') }}"></script>
-@endpush
-
 @push('script-functions')
 <script type="text/javascript">
     $(document).ready(function() {
