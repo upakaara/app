@@ -12,7 +12,8 @@
 
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
-    <link href="{{ asset('/packages/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('/packages/bootstrap/bootstrap.min.css') }}"> 
+    <link rel="stylesheet" href="{{ asset('/packages/bootstrap-select/css/bootstrap-select.min.css' ) }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     @stack('styles')
 </head>
@@ -54,20 +55,20 @@
                                     {{ Auth::user()->first_name . ' ' . Auth::user()->last_name}} <span class="caret"></span>
                                 </a>
 
+                                <li>
+                                  <a href="{{ route('logout') }}"
+                                  onclick="event.preventDefault();
+                                  document.getElementById('logout-form').submit();">
+                                  Logout
+                                </a>
+                                
+                                <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                                  {{ csrf_field() }}
+                                </form>
+                              </li>
                                 <ul class="dropdown-menu">
                                     <li>
                                         <a href="{{ route('profile') }}">Update Profile</a>
-                                    </li>
-                                    <li>
-                                        <a href="{{ route('logout') }}"
-                                            onclick="event.preventDefault();
-                                                     document.getElementById('logout-form').submit();">
-                                            Logout
-                                        </a>
-
-                                        <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-                                            {{ csrf_field() }}
-                                        </form>
                                     </li>
                                 </ul>
                             </li>
@@ -86,24 +87,26 @@
 
         @yield('content')
     </div>
-
+    
     <script src="{{ asset('js/app.js') }}"></script>
-    <script type="text/javascript">
-        $(document).ready(function(){
-            setTimeout(function() {
-              $('#successMessageAlert').fadeOut('fast');
-            }, 3000);
-
-            $('#jobListTable tr').click(function() {
-                var href = $(this).find("a").attr("href");
-                if(href) {
-                    window.location = href;
-                }
-            });
-        });
+    <script src="{{ asset('/packages/jquery/jquery.min.js') }}" ></script>
+    <script type="text/javascript" src="{{ asset('/packages/bootstrap/bootstrap.min.js') }}"></script>
+    <script src="{{ asset('/packages/bootstrap-select/js/bootstrap-select.min.js' ) }}"></script>
+    <script type="text/javascript" src="{{ asset('/packages/popper.min.js') }}"></script>
+    <script type="text/javascript"> 
+    $(document).ready(function(){
+      setTimeout(function() {
+        $('#successMessageAlert').fadeOut('fast');
+      }, 3000);
+      
+      $('#jobListTable tr').click(function() {
+        var href = $(this).find("a").attr("href");
+        if(href) {
+          window.location = href;
+        }
+      });
+    });
     </script>
-    <script type="text/javascript" src="{{ asset('/js/popper.min.js') }}"></script>
-    <script type="text/javascript" src="js/bootstrap.min.js"></script>
     @stack('scripts')
     @stack('script-functions')    
 </body>

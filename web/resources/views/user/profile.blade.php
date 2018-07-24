@@ -233,12 +233,10 @@
 
 @push('styles')
     <link href="{{ asset('/packages/bootstrap-datepicker/css/bootstrap-datepicker.min.css') }}" rel="stylesheet">
-    <link href="{{ asset('/packages/bootstrap-select/css/bootstrap-select.min.css') }}" rel="stylesheet">
 @endpush
 
 @push('scripts')
     <script type="text/javascript" src="{{ asset('/packages/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}"></script>
-    <script type="text/javascript" src="{{ asset('/packages/bootstrap-select/js/bootstrap-select.min.js') }}"></script>
 @endpush
 
 @push('script-functions')
